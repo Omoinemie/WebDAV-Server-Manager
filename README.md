@@ -45,20 +45,17 @@ CONFIG_PATH=/path/to/your/webdav/config.yaml PORT=3001 node server.js
 nano /etc/systemd/system/webdav.service
 ```
 ``` ini
-[Unit] 
-Description=webdav server 
-Wants=network-online.target
-After=network-online.target 
- 
-[Service] 
-Type=simple 
-WorkingDirectory=/path/to/your/webdav
-ExecStart=webdav -c config.yaml
-ExecReload=webdav -c config.yaml
-RestartSec=5s
+[Unit]
+Description=WebDAV Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/path/to/your/webdav/webdav --config /path/to/your/webdav/config.yaml
 Restart=on-failure
- 
-[Install] 
+
+[Install]
 WantedBy=multi-user.target
 ```
 ``` bash
