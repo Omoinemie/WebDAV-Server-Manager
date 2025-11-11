@@ -1,0 +1,35 @@
+address: 0.0.0.0
+port: 80
+tls: false
+cert: .cert
+key: .key
+prefix: /
+debug: true
+noSniff: false
+behindProxy: false
+directory: .
+permissions: R
+rules: []
+rulesBehavior: overwrite
+log:
+  format: console
+  colors: true
+  outputs:
+    - stderr
+cors:
+  enabled: false
+  credentials: true
+  allowed_headers:
+    - Depth
+  allowed_hosts:
+    - http://localhost:8080
+  allowed_methods:
+    - GET
+  exposed_headers:
+    - Content-Length
+    - Content-Range
+users:
+  - username: admin
+    password: admin
+    permissions: CRUD
+    directory: /

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebDAV Server Manager</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 data-i18n="title">WebDAV 服务器管理工具</h1>
+            <div class="language-switcher">
+                <select id="languageSelect">
+                    <option value="zh-CN">中文</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="alertContainer"></div>
+
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="server" data-i18n="tabs.server">服务器设置</div>
+                <div class="tab" data-tab="users" data-i18n="tabs.users">用户管理</div>
+                <div class="tab" data-tab="logs" data-i18n="tabs.logs">日志配置</div>
+                <div class="tab" data-tab="cors" data-i18n="tabs.cors">CORS 设置</div>
+            </div>
+
+            <!-- 服务器设置标签 -->
+            <div class="tab-content active" id="server-tab">
+                <div class="card">
+                    <div class="card-header" data-i18n="server.basicSettings">基本设置</div>
+                    <div class="card-body">
+                        <div class="flex">
+                            <div class="flex-1 mr-2">
+                                <div class="form-group">
+                                    <label data-i18n="server.address">服务器地址</label>
+                                    <input type="text" id="configAddress" value="0.0.0.0">
+                                    <div class="form-hint" data-i18n="server.addressHint">服务器监听地址，0.0.0.0 表示监听所有网络接口</div>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="form-group">
+                                    <label data-i18n="server.port">服务器端口</label>
+                                    <input type="number" id="configPort" value="80">
+                                    <div class="form-hint" data-i18n="server.portHint">WebDAV 服务监听的端口号</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-i18n="server.prefix">WebDAV 路径前缀</label>
+                            <input type="text" id="configPrefix" value="/">
+                            <div class="form-hint" data-i18n="server.prefixHint">WebDAV 服务的 URL 路径前缀，默认为根路径 '/'</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-i18n="server.directory">数据目录</label>
+                            <input type="text" id="configDirectory" value="/app/webdav/data">
+                            <div class="form-hint" data-i18n="server.directoryHint">WebDAV 服务器存储文件的根目录，确保目录存在且有读写权限</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="configTLS">
+                                <label for="configTLS" data-i18n="server.enableTLS">启用 TLS/SSL 加密</label>
+                            </div>
+                            <div class="form-hint" data-i18n="server.tlsHint">启用 HTTPS 安全连接，需要提供有效的 SSL 证书和私钥</div>
+                        </div>
+                        
+                        <div id="tlsSettings" class="hidden">
+                            <div class="form-group">
+                                <label data-i18n="server.certPath">证书文件路径</label>
+                                <input type="text" id="configCert" value="/app/webdav/ssl/vomiku.com.cert">
+                                <div class="form-hint" data-i18n="server.certHint">SSL 证书文件的完整路径</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label data-i18n="server.keyPath">私钥文件路径</label>
+                                <input type="text" id="configKey" value="/app/webdav/ssl/vomiku.com.key">
+                                <div class="form-hint" data-i18n="server.keyHint">SSL 私钥文件的完整路径</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="configDebug">
+                                <label for="configDebug" data-i18n="server.enableDebug">启用调试日志</label>
+                            </div>
+                            <div class="form-hint" data-i18n="server.debugHint">启用详细的调试日志输出，有助于排查问题但会产生大量日志</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="configNoSniff">
+                                <label for="configNoSniff" data-i18n="server.disableSniff">禁用文件内容类型嗅探</label>
+                            </div>
+                            <div class="form-hint" data-i18n="server.sniffHint">禁止服务器自动检测文件类型，提高安全性但可能影响某些客户端</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="configBehindProxy">
+                                <label for="configBehindProxy" data-i18n="server.behindProxy">在可信代理后运行</label>
+                            </div>
+                            <div class="form-hint" data-i18n="server.proxyHint">如果服务器位于反向代理（如 Nginx）后面，启用此选项以正确获取客户端 IP</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-i18n="server.defaultPermissions">默认权限</label>
+                            <div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="permC" value="C">
+                                    <label for="permC" data-i18n="permissions.create">创建 (C)</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="permR" value="R" checked>
+                                    <label for="permR" data-i18n="permissions.read">读取 (R)</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="permU" value="U">
+                                    <label for="permU" data-i18n="permissions.update">更新 (U)</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="permD" value="D">
+                                    <label for="permD" data-i18n="permissions.delete">删除 (D)</label>
+                                </div>
+                            </div>
+                            <div class="form-hint" data-i18n="server.permissionsHint">新用户的默认权限，可组合多个权限（如 CRUD 表示所有权限）</div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button class="btn btn-success" id="saveServerConfig" data-i18n="buttons.saveSettings">保存服务器设置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 用户管理标签 -->
+            <div class="tab-content" id="users-tab">
+                <div class="card">
+                    <div class="card-header">
+                        <span data-i18n="users.userList">用户列表</span>
+                        <button class="btn btn-success" id="addUserBtn" data-i18n="buttons.addUser">添加用户</button>
+                    </div>
+                    <div class="card-body">
+                        <table id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="users.username">用户名</th>
+                                    <th data-i18n="users.password">密码</th>
+                                    <th data-i18n="users.permissions">权限</th>
+                                    <th data-i18n="users.directory">目录</th>
+                                    <th data-i18n="users.actions">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- 用户数据将通过JavaScript动态加载 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 添加/编辑用户表单 -->
+                <div class="card hidden" id="userFormCard">
+                    <div class="card-header" id="userFormTitle" data-i18n="users.addUser">添加用户</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label data-i18n="users.username">用户名</label>
+                            <input type="text" id="userUsername">
+                            <div class="form-hint" data-i18n="users.usernameHint">用户的登录名称，不能包含特殊字符</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-i18n="users.password">密码</label>
+                            <div class="password-field">
+                                <input type="text" id="userPassword">
+                                <button type="button" class="btn btn-warning" id="generatePasswordBtn" data-i18n="buttons.generatePassword">随机生成</button>
+                            </div>
+                            <div class="form-hint" data-i18n="users.passwordHint">用户登录密码，建议使用强密码（16位大小写字母和数字组合）</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-i18n="users.directory">用户目录</label>
+                            <input type="text" id="userDirectory" value="/app/webdav/data/">
+                            <div class="form-hint" data-i18n="users.directoryHint">用户的专属文件目录，如果不存在将会自动创建</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-i18n="users.permissions">权限</label>
+                            <div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="userPermC" value="C">
+                                    <label for="userPermC" data-i18n="permissions.create">创建 (C) - 允许上传和创建文件/文件夹</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="userPermR" value="R" checked>
+                                    <label for="userPermR" data-i18n="permissions.read">读取 (R) - 允许查看和下载文件</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="userPermU" value="U">
+                                    <label for="userPermU" data-i18n="permissions.update">更新 (U) - 允许修改现有文件</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="userPermD" value="D">
+                                    <label for="userPermD" data-i18n="permissions.delete">删除 (D) - 允许删除文件/文件夹</label>
+                                </div>
+                            </div>
+                            <div class="form-hint" data-i18n="users.permissionsHint">用户的操作权限，可根据需要组合选择</div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button class="btn btn-success" id="saveUserBtn" data-i18n="buttons.saveUser">保存用户</button>
+                            <button class="btn" id="cancelUserBtn" data-i18n="buttons.cancel">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 日志配置标签 -->
+            <div class="tab-content" id="logs-tab">
+                <div class="card">
+                    <div class="card-header" data-i18n="logs.title">日志配置</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label data-i18n="logs.format">日志格式</label>
+                            <select id="logFormat">
+                                <option value="console" data-i18n="logs.consoleFormat">Console - 控制台格式</option>
+                                <option value="json" data-i18n="logs.jsonFormat">JSON - JSON 格式</option>
+                            </select>
+                            <div class="form-hint" data-i18n="logs.formatHint">日志输出的格式，Console 格式更易读，JSON 格式便于日志分析</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="logColors" checked>
+                                <label for="logColors" data-i18n="logs.enableColors">启用颜色输出</label>
+                            </div>
+                            <div class="form-hint" data-i18n="logs.colorsHint">在控制台输出中使用颜色高亮，仅对 Console 格式有效</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-i18n="logs.outputs">日志输出端</label>
+                            <div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="logStderr" checked>
+                                    <label for="logStderr" data-i18n="logs.stderr">标准错误输出 (stderr)</label>
+                                </div>
+                            </div>
+                            <div class="form-hint" data-i18n="logs.outputsHint">日志输出的目标，通常选择 stderr 以便与系统日志集成</div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button class="btn btn-success" id="saveLogConfig" data-i18n="buttons.saveLogConfig">保存日志配置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CORS 设置标签 -->
+            <div class="tab-content" id="cors-tab">
+                <div class="card">
+                    <div class="card-header" data-i18n="cors.title">CORS 配置</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="corsEnabled">
+                                <label for="corsEnabled" data-i18n="cors.enableCors">启用 CORS</label>
+                            </div>
+                            <div class="form-hint" data-i18n="cors.enableHint">启用跨域资源共享，允许网页从不同域的服务器请求资源</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="corsCredentials">
+                                <label for="corsCredentials" data-i18n="cors.allowCredentials">允许携带凭据</label>
+                            </div>
+                            <div class="form-hint" data-i18n="cors.credentialsHint">允许跨域请求携带认证信息（如 Cookies）</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-i18n="cors.allowedHeaders">允许的请求头</label>
+                            <input type="text" id="corsHeaders" value="Depth">
+                            <div class="form-hint" data-i18n="cors.headersHint">允许的 HTTP 请求头，多个头用逗号分隔（如：Depth, Content-Type）</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-i18n="cors.allowedHosts">允许的源地址</label>
+                            <input type="text" id="corsHosts" value="http://localhost:8080">
+                            <div class="form-hint" data-i18n="cors.hostsHint">允许访问的源地址，多个地址用逗号分隔（如：http://localhost:8080, https://example.com）</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-i18n="cors.allowedMethods">允许的 HTTP 方法</label>
+                            <input type="text" id="corsMethods" value="GET">
+                            <div class="form-hint" data-i18n="cors.methodsHint">允许的 HTTP 方法，多个方法用逗号分隔（如：GET, POST, PUT, DELETE）</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label data-i18n="cors.exposedHeaders">暴露的响应头</label>
+                            <input type="text" id="corsExposedHeaders" value="Content-Length, Content-Range">
+                            <div class="form-hint" data-i18n="cors.exposedHeadersHint">允许客户端访问的响应头，多个头用逗号分隔</div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button class="btn btn-success" id="saveCorsConfig" data-i18n="buttons.saveCorsConfig">保存 CORS 配置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 固定在右下角的重启按钮 -->
+    <div class="restart-button-container">
+        <button class="restart-button" id="restartBtn" data-i18n="buttons.restart">重启服务器</button>
+    </div>
+
+    <!-- 加载 JavaScript 文件 -->
+    <script src="js/utils.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
