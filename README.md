@@ -29,8 +29,8 @@ node server.js /path/to/your/webdav/config.yaml
 CONFIG_PATH=/path/to/your/webdav/config.yaml PORT=3001 node server.js
 ```
 ### 4. 说明
-#### 1. 你必须把webdav二进制文件放入/path/to/your/webdav/config.yaml同一个目录里面，
-#### 2. webdav必须以service服务的方式运行，服务名为webdav.service，修改WorkingDirectory到你的目录
+#### 1. 你必须把webdav二进制文件放入config.yaml同一个目录里面，
+#### 2. webdav必须以service服务的方式运行，服务名为webdav.service，修改WorkingDirectory为webdav的目录
 #### 3. 创建webdav服务
 ``` bash
 nano /etc/systemd/system/webdav.service
