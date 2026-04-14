@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>WebDAV Config Manager</title>
+	<link rel="stylesheet" href="/css/style.css">
+	<!-- Theme flash fix: apply before first paint -->
+	<script>
+	(function(){
+		var t=localStorage.getItem('th');
+		if(!t){t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';}
+		document.documentElement.setAttribute('data-theme',t);
+	})();
+	</script>
+</head>
+<body>
+	<div class="app">
+		<aside class="sidebar" id="sidebar">
+			<div class="sb-head">
+				<h1><span class="tx"> WebDAV Manager</span></h1>
+				<div class="sub" data-i18n="app_sub">config.yaml Configuration</div>
+			</div>
+			<nav class="sb-nav">
+				<div class="nav-i on" data-s="server"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="5" rx="1"/><circle cx="6" cy="5.5" r=".5" fill="currentColor"/><rect x="2" y="11" width="20" height="5" rx="1"/><circle cx="6" cy="13.5" r=".5" fill="currentColor"/><rect x="2" y="19" width="20" height="2" rx="1"/></svg><span data-i18n="nav_server"> Server Settings</span></div>
+				<div class="nav-i" data-s="tls"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span data-i18n="nav_tls"> TLS / SSL</span></div>
+				<div class="nav-i" data-s="cors"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10A15.3 15.3 0 0112 2z"/></svg><span data-i18n="nav_cors"> CORS</span></div>
+				<div class="nav-i" data-s="logging"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg><span data-i18n="nav_logging"> Logging</span></div>
+				<div class="nav-i" data-s="rules"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/></svg><span data-i18n="nav_rules"> Global Rules</span></div>
+				<div class="nav-d"></div>
+				<div class="nav-i" data-s="users"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span data-i18n="nav_users"> User Management</span></div>
+				<div class="nav-i" data-s="files"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg><span data-i18n="nav_files"> File Manager</span></div>
+				<div class="nav-d"></div>
+				<div class="nav-i" data-s="raw"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span data-i18n="nav_raw"> Raw YAML</span></div>
+				<div class="nav-i" data-s="settings"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span data-i18n="nav_settings"> Settings</span></div>
+			</nav>
+			<div class="sb-foot">WebDAV Config Manager v1.0<br><span id="cfgPath" style="color:var(--accent2)">loading...</span></div>
+		</aside>
+		<div class="main-area">
+			<div class="topbar">
+				<div style="display:flex;align-items:center;gap:10px">
+					<button class="btn btn-o btn-s sb-back" onclick="document.getElementById('sidebar').classList.toggle('open')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+					<h2 id="secTitle" data-i18n="nav_server">Server Settings</h2>
+				</div>
+				<div class="top-actions">
+					<div class="service-info" style="display:flex;align-items:center;gap:8px;margin-right:15px;padding:4px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;">
+						<div id="statusDot" class="status-dot" style="width:8px;height:8px;border-radius:50%;"></div>
+						<div style="display:flex;flex-direction:column;line-height:1.1;">
+							<span id="statusLabel" data-i18n="status_checking" style="font-size:12px;font-weight:bold;color:var(--text);">Checking</span>
+							<span id="statusUptime" style="font-size:10px;color:var(--text2);white-space:nowrap;">--</span>
+						</div>
+					</div>
+					<button class="btn btn-o" onclick="doRestart()" data-i18n-title="btn_restart"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg> <span data-i18n="btn_restart">Restart</span></button>
+					<button class="btn btn-o" onclick="saveCfg()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> <span data-i18n="btn_save">Save</span></button>
+					<button class="btn btn-o" onclick="loadCfg()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> <span data-i18n="btn_refresh">Refresh</span></button>
+					<button class="btn btn-o" onclick="toggleTheme()" id="thmBtn" data-i18n-title="btn_theme"><svg class="icon" id="thmIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></button>
+				</div>
+			</div>
+			<div class="content">
+				<!-- Server -->
+				<div class="sec on" id="s-server">
+					<div class="card">
+						<h3 data-i18n="card_network">Network Settings</h3>
+						<div class="grid2">
+							<div class="fg"><label data-i18n="label_address">Listen Address</label><input id="address" placeholder="0.0.0.0"><span class="hint" data-i18n="hint_address">0.0.0.0 = all interfaces</span></div>
+							<div class="fg"><label data-i18n="label_port">Port</label><input id="port" type="number" placeholder="6065" min="1" max="65535"></div>
+							<div class="fg"><label data-i18n="label_prefix">Path Prefix</label><input id="prefix" placeholder="/"></div>
+							<div class="fg"><label data-i18n="label_directory">Root Directory</label><input id="directory" placeholder="/data"></div>
+						</div>
+					</div>
+					<div class="card">
+						<h3 data-i18n="card_features">Feature Toggles</h3>
+						<div class="trow"><label data-i18n="label_debug">Debug Mode</label><label class="sw"><input type="checkbox" id="debug"><span class="sl"></span></label></div>
+						<div class="trow"><label data-i18n="label_no_sniff">Disable MIME Sniffing</label><label class="sw"><input type="checkbox" id="noSniff"><span class="sl"></span></label></div>
+						<div class="trow"><label data-i18n="label_proxy">Behind Proxy</label><label class="sw"><input type="checkbox" id="behindProxy"><span class="sl"></span></label></div>
+						<div class="trow"><label data-i18n="label_no_password">No Password Mode</label><label class="sw"><input type="checkbox" id="noPassword"><span class="sl"></span></label></div>
+					</div>
+					<div class="card">
+						<h3 data-i18n="card_permissions">Default Permissions</h3>
+						<div class="grid2">
+							<div class="fg"><label data-i18n="label_default_perms">Default User Permissions</label>
+								<div class="pcs" id="defPerms">
+									<label class="pc" data-p="C"><input type="checkbox"><b>C</b> <span data-i18n="perm_create">Create</span></label>
+									<label class="pc on" data-p="R"><input type="checkbox" checked><b>R</b> <span data-i18n="perm_read">Read</span></label>
+									<label class="pc" data-p="U"><input type="checkbox"><b>U</b> <span data-i18n="perm_update">Update</span></label>
+									<label class="pc" data-p="D"><input type="checkbox"><b>D</b> <span data-i18n="perm_delete">Delete</span></label>
+								</div>
+								<span class="hint" data-i18n="hint_perms">C=Create R=Read U=Update D=Delete</span>
+							</div>
+							<div class="fg"><label data-i18n="label_rules_behavior">Rules Inheritance Mode</label>
+								<select id="rulesBehavior">
+									<option value="overwrite" data-i18n="opt_overwrite">overwrite -- user rules override global</option>
+									<option value="append" data-i18n="opt_append">append -- append to global</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- TLS -->
+				<div class="sec" id="s-tls">
+					<div class="card">
+						<h3 data-i18n="card_tls">TLS / SSL</h3>
+						<div class="trow" style="margin-bottom:14px"><label data-i18n="label_enable_tls">Enable TLS</label><label class="sw"><input type="checkbox" id="tls"><span class="sl"></span></label></div>
+						<div class="grid2">
+							<div class="fg"><label data-i18n="label_cert">Certificate File</label><input id="cert" placeholder="cert.pem"></div>
+							<div class="fg"><label data-i18n="label_key">Private Key File</label><input id="key" placeholder="key.pem"></div>
+						</div>
+					</div>
+				</div>
+				<!-- CORS -->
+				<div class="sec" id="s-cors">
+					<div class="card">
+						<h3 data-i18n="card_cors">CORS</h3>
+						<div class="trow" style="margin-bottom:10px"><label data-i18n="label_enable_cors">Enable CORS</label><label class="sw"><input type="checkbox" id="corsOn"><span class="sl"></span></label></div>
+						<div class="trow" style="margin-bottom:14px"><label data-i18n="label_cors_creds">Allow Credentials</label><label class="sw"><input type="checkbox" id="corsCred"><span class="sl"></span></label></div>
+						<div class="fg full" style="margin-bottom:12px"><label data-i18n="label_cors_hosts">Allowed Origins</label><textarea id="corsHosts" rows="2" data-i18n-placeholder="placeholder_cors_hosts" placeholder="One per line, * = all"></textarea></div>
+						<div class="fg full" style="margin-bottom:12px"><label data-i18n="label_cors_headers">Allowed Headers</label><textarea id="corsHdrs" rows="4" data-i18n-placeholder="placeholder_cors_headers" placeholder="One header per line"></textarea></div>
+						<div class="fg full" style="margin-bottom:12px"><label data-i18n="label_cors_methods">Allowed Methods</label><textarea id="corsMtds" rows="4" data-i18n-placeholder="placeholder_cors_methods" placeholder="One method per line"></textarea></div>
+						<div class="fg full"><label data-i18n="label_cors_expose">Exposed Headers</label><textarea id="corsExp" rows="2" data-i18n-placeholder="placeholder_cors_headers" placeholder="One header per line"></textarea></div>
+					</div>
+				</div>
+				<!-- Logging -->
+				<div class="sec" id="s-logging">
+					<div class="card">
+						<h3 data-i18n="card_logging">Logging</h3>
+						<div class="grid2">
+							<div class="fg"><label data-i18n="label_log_format">Log Format</label><select id="logFmt">
+									<option value="console">Console</option>
+									<option value="json">JSON</option>
+								</select></div>
+						</div>
+						<div class="trow" style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
+							<label style="font-size:13px" data-i18n="label_log_colors">Colored Output</label>
+							<label class="sw"><input type="checkbox" id="logClr"><span class="sl"></span></label>
+						</div>
+						<div class="fg full" style="margin-top:14px"><label data-i18n="label_log_outputs">Output Targets</label>
+							<div id="logOuts"></div>
+						</div>
+					</div>
+				</div>
+				<!-- Rules -->
+				<div class="sec" id="s-rules">
+					<div class="card">
+						<h3><span data-i18n="card_rules">Global Rules</span> <span class="badge" id="rCnt">0</span></h3>
+						<p style="font-size:12px;color:var(--text2);margin-bottom:14px" data-i18n="hint_rules">Rules match from last to first</p>
+						<div id="rulesList"></div>
+						<button class="btn btn-p" onclick="openRule()" style="margin-top:10px"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> <span data-i18n="btn_add_rule">Add Rule</span></button>
+					</div>
+				</div>
+				<!-- Users -->
+				<div class="sec" id="s-users">
+					<div class="card">
+						<h3><span data-i18n="card_users">User Management</span> <span class="badge" id="uCnt">0</span></h3>
+						<div id="userList"></div>
+						<button class="btn btn-p" onclick="openUser()" style="margin-top:10px"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> <span data-i18n="btn_add_user">Add User</span></button>
+					</div>
+				</div>
+				<!-- Files -->
+				<div class="sec" id="s-files">
+					<div class="card">
+						<h3 data-i18n="card_files">File Browser</h3>
+						<div class="fm-bar">
+							<div class="fm-path">
+								<span style="font-size:12px;color:var(--text2);white-space:nowrap" data-i18n="label_directory_path">Directory:</span>
+								<input id="fmP" value="/" onkeydown="if(event.key==='Enter')FM.go()">
+								<button class="btn btn-o btn-s" onclick="FM.go()" data-i18n="btn_open">Open</button>
+							</div>
+							<button class="btn btn-o btn-s" onclick="FM.go()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> <span data-i18n="btn_refresh">Refresh</span></button>
+						</div>
+						<div class="fm-bc" id="fmBc"></div>
+						<div id="fmC" style="min-height:280px">
+							<div class="empty">
+								<svg class="icon icon-xl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px;display:block;opacity:.5"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+								<p data-i18n="hint_empty_dir">Click Open to load directory</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Raw YAML -->
+				<div class="sec" id="s-raw">
+					<div class="card">
+						<h3 data-i18n="card_raw">Raw YAML</h3>
+						<p style="font-size:12px;color:var(--text2);margin-bottom:12px" data-i18n="hint_raw">Directly edit YAML source</p>
+						<textarea class="ed" id="rawEd" spellcheck="false"></textarea>
+						<div style="margin-top:10px;display:flex;gap:8px">
+							<button class="btn btn-p" onclick="saveRaw()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> <span data-i18n="btn_save_validate">Save and Validate</span></button>
+							<button class="btn btn-o" onclick="loadRaw()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> <span data-i18n="btn_reload">Reload</span></button>
+						</div>
+					</div>
+				</div>
+				<!-- Settings -->
+				<div class="sec" id="s-settings">
+					<div class="card">
+						<h3 data-i18n="card_settings">Settings</h3>
+						<div class="grid2">
+							<div class="fg"><label data-i18n="label_language">Language</label>
+								<select id="setLang">
+									<option value="en">English</option>
+									<option value="zh-CN">Chinese (Simplified)</option>
+								</select>
+							</div>
+							<div class="fg"><label data-i18n="label_web_port">Web Port</label><input id="setPort" type="number" placeholder="3080" min="1" max="65535"></div>
+							<div class="fg full"><label data-i18n="label_config_path">WebDAV Config Path</label><input id="setConfigPath" placeholder="/app/webdav/config.yaml"></div>
+							<div class="fg"><label data-i18n="label_service_name">Service Name</label><input id="setServiceName" placeholder="webdav"></div>
+							<div class="fg"><label data-i18n="label_file_root">File Manager Root Directory</label><input id="setFileRoot" placeholder="/app/webdav/data"></div>
+							<div class="fg full"><label data-i18n="label_secret_key">Secret Key</label><input id="setSecretKey" placeholder="auto-generated if empty"></div>
+						</div>
+						<div style="margin-top:16px">
+							<button class="btn btn-p" onclick="saveSettings()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> <span data-i18n="btn_save">Save</span></button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="sbar"><span id="stxt" data-i18n="status_ready">Ready</span><span id="stime"></span></div>
+		</div>
+	</div>
+
+	<!-- User Modal -->
+	<div class="mov" id="userMov">
+		<div class="mod">
+			<h3 id="uMovTitle" data-i18n="modal_add_user">Add User</h3>
+			<input type="hidden" id="uIdx" value="-1">
+			<div class="fg"><label data-i18n="label_username">Username *</label><input id="muUser" data-i18n-placeholder="label_username" placeholder="Username"></div>
+			<div class="fg"><label data-i18n="label_password">Password *</label>
+				<div class="pw-row"><input id="muPass" data-i18n-placeholder="placeholder_password" placeholder="plaintext or {bcrypt}$..."><button class="btn btn-o btn-s" onclick="genPw('muPass')" data-i18n-title="hint_pw_gen" title="Generate random"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></button><button class="btn btn-o btn-s" onclick="togPw('muPass')" title="Toggle visibility"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+				<span class="hint" data-i18n="hint_pw_gen">Generate 24-char random password</span>
+			</div>
+			<div class="fg"><label data-i18n="label_user_dir">User Directory (leave empty for default)</label><input id="muDir" data-i18n-placeholder="placeholder_user_dir" placeholder="/data/user"></div>
+			<div class="fg"><label data-i18n="label_user_perms">Permissions (leave empty for default)</label>
+				<div class="pcs" id="muP"><label class="pc" data-p="C"><input type="checkbox"><b>C</b></label><label class="pc" data-p="R"><input type="checkbox"><b>R</b></label><label class="pc" data-p="U"><input type="checkbox"><b>U</b></label><label class="pc" data-p="D"><input type="checkbox"><b>D</b></label></div>
+			</div>
+			<div class="fg"><label data-i18n="label_user_rules">User Rules</label>
+				<div id="muR"></div><button class="btn btn-o btn-s" onclick="addMuR()" style="margin-top:6px"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> <span data-i18n="btn_add_rule">Add Rule</span></button>
+			</div>
+			<div class="mod-act"><button class="btn btn-o" onclick="closeM('userMov')" data-i18n="btn_cancel">Cancel</button><button class="btn btn-p" onclick="saveUser()" data-i18n="btn_save_modal">Save</button></div>
+		</div>
+	</div>
+
+	<!-- Rule Modal -->
+	<div class="mov" id="ruleMov">
+		<div class="mod">
+			<h3 id="rMovTitle" data-i18n="modal_add_rule">Add Rule</h3>
+			<input type="hidden" id="rIdx" value="-1">
+			<div class="fg"><label data-i18n="label_match_type">Match Type</label><select id="mrType" onchange="document.getElementById('mrPG').style.display=this.value==='path'?'':'none';document.getElementById('mrRG').style.display=this.value==='regex'?'':'none'">
+					<option value="path" data-i18n="opt_path">Path</option>
+					<option value="regex" data-i18n="opt_regex">Regex</option>
+				</select></div>
+			<div class="fg" id="mrPG"><label data-i18n="label_path">Path</label><input id="mrPath" data-i18n-placeholder="placeholder_path" placeholder="/some/path"></div>
+			<div class="fg" id="mrRG" style="display:none"><label data-i18n="label_regex">Regex</label><input id="mrRegex" data-i18n-placeholder="placeholder_regex" placeholder="^.+\.js$"></div>
+			<div class="fg"><label data-i18n="label_rule_perms">Permissions</label>
+				<div class="pcs" id="mrP"><label class="pc" data-p="C"><input type="checkbox"><b>C</b></label><label class="pc" data-p="R"><input type="checkbox"><b>R</b></label><label class="pc" data-p="U"><input type="checkbox"><b>U</b></label><label class="pc" data-p="D"><input type="checkbox"><b>D</b></label></div>
+				<span class="hint" data-i18n="hint_rule_perms">None checked = none (deny)</span>
+			</div>
+			<div class="mod-act"><button class="btn btn-o" onclick="closeM('ruleMov')" data-i18n="btn_cancel">Cancel</button><button class="btn btn-p" onclick="saveRule()" data-i18n="btn_save_modal">Save</button></div>
+		</div>
+	</div>
+
+	<!-- Preview Overlay -->
+	<div class="preview-overlay" id="previewOv">
+		<div class="preview-topbar">
+			<div class="preview-topbar-left">
+				<span id="pvIcon" style="font-size:18px"></span>
+				<h3 id="pvTitle" data-i18n="preview_title">Preview</h3>
+				<span class="preview-meta" id="pvMeta"></span>
+			</div>
+			<div class="preview-topbar-right">
+				<a id="pvDl" class="btn btn-o btn-s" href="#" target="_blank" download><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span data-i18n="btn_download">Download</span></a>
+				<button class="btn btn-o btn-s" onclick="Preview.close()" data-i18n-title="btn_close" title="Close (Esc)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+			</div>
+		</div>
+		<div class="preview-body" id="pvBody">
+			<div class="preview-loading">
+				<div class="spinner"></div>
+				<p style="color:var(--text2);font-size:13px" data-i18n="loading">Loading...</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="toast" id="toast"></div>
+
+	<script src="/js/i18n.js"></script>
+	<script src="/js/utils.js"></script>
+	<script src="/js/file-preview.js"></script>
+	<script src="/js/file-manager.js"></script>
+	<script src="/js/app.js"></script>
+</body>
+</html>

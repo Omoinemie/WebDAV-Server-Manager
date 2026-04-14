@@ -1,0 +1,8 @@
+{
+  "language": "zh-CN",
+  "web_port": 3080,
+  "config_path": "/app/webdav/config.yaml",
+  "service_name": "webdav",
+  "file_root": "/",
+  "secret_key": ""
+}
