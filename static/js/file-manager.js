@@ -88,30 +88,22 @@ var FM = (function() {
   }
 
   function ico(n) {
-    var svg = {
+    var cat = Preview.getFileCategory(n);
+    // Map preview categories to FM icon colors
+    var colorMap = { image: 'var(--green)', video: 'var(--blue)', audio: 'var(--orange)' };
+    var stroke = colorMap[cat] || 'var(--text2)';
+    if (cat === 'code' || cat === 'text' || cat === 'spreadsheet' || cat === 'presentation') cat = 'code';
+    else if (cat === 'pdf' || cat === 'doc' || cat === 'unknown') cat = 'file';
+    var icons = {
       folder: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
-      image: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
-      video: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
-      audio: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
-      code: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
-      file: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
-      archive: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>'
+      image: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="' + stroke + '" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+      video: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="' + stroke + '" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
+      audio: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="' + stroke + '" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+      code: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="' + stroke + '" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+      file: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="' + stroke + '" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+      archive: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="' + stroke + '" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>'
     };
-    var ext = n.split('.').pop().toLowerCase();
-    var m = {
-      jpg: 'image', jpeg: 'image', png: 'image', gif: 'image', webp: 'image', svg: 'image', bmp: 'image', ico: 'image', avif: 'image',
-      mp4: 'video', mkv: 'video', avi: 'video', mov: 'video', webm: 'video',
-      mp3: 'audio', wav: 'audio', ogg: 'audio', flac: 'audio', aac: 'audio',
-      pdf: 'file', doc: 'file', docx: 'file', xls: 'file', xlsx: 'file', ppt: 'file', pptx: 'file',
-      zip: 'archive', rar: 'archive', tar: 'archive', gz: 'archive', '7z': 'archive',
-      js: 'code', ts: 'code', py: 'code', go: 'code', rs: 'code', java: 'code', c: 'code', cpp: 'code', h: 'code',
-      html: 'code', css: 'code', json: 'code', yaml: 'code', yml: 'code', toml: 'code', xml: 'code',
-      sh: 'code', sql: 'code', rb: 'code', php: 'code', lua: 'code',
-      txt: 'file', md: 'file', log: 'file', csv: 'file',
-      ini: 'code', cfg: 'code', conf: 'code', env: 'code'
-    };
-    var cat = m[ext] || 'file';
-    return svg[cat] || svg.file;
+    return icons[cat] || icons.file;
   }
 
   function sz(b) {
@@ -153,5 +145,5 @@ var FM = (function() {
     });
   }
 
-  return { go: go, nav: nav, ico: ico, icoFolder: function() { return '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>'; }, sz: sz, initEvents: initEvents };
+  return { go: go, nav: nav, ico: ico, icoFolder: function() { return ico('folder'); }, sz: sz, initEvents: initEvents };
 })();

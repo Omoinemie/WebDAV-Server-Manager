@@ -202,5 +202,5 @@ var Preview = (function() {
     });
   }
 
-  return { show: show, close: close, initEvents: initEvents };
+  return { show: show, close: close, initEvents: initEvents, getFileCategory: getFileCategory };
 })();

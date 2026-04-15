@@ -161,9 +161,9 @@ def api_get_config():
     try:
         if not os.path.exists(CONFIG_PATH):
             return jsonify({"error": "Config file not found", "path": CONFIG_PATH}), 404
-        config = load_config()
         with open(CONFIG_PATH, "r", encoding="utf-8") as f:
             raw = f.read()
+        config = yaml.safe_load(raw)
         return jsonify({"config": config, "path": CONFIG_PATH, "raw": raw})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -213,13 +213,7 @@ def api_sign_files():
     data = request.get_json()
     paths = data.get("paths", [])
     expire = int(time.time()) + SIGN_EXPIRE
-    result = {}
-    for p in paths:
-        msg = f"{p}:{expire}"
-        sig = hmac.new(
-            SECRET_KEY.encode(), msg.encode(), hashlib.sha256
-        ).hexdigest()
-        result[p] = f"/api/signed-download?path={p}&expire={expire}&sig={sig}"
+    result = {p: make_sign(p, expire) for p in paths}
     return jsonify(result)
 
 
