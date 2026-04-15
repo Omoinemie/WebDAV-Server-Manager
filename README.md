@@ -66,7 +66,7 @@ apt install python3-flask python3-yaml
 ### 运行
 
 ```bash
-python server.py
+python3 server.py
 ```
 
 默认访问 `http://localhost:3080`
