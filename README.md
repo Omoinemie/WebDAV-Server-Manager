@@ -1,4 +1,10 @@
 # WebDAV Server Manager
+<img width="2144" height="1247" alt="image" src="https://github.com/user-attachments/assets/4c6f82ac-0269-44be-9c2d-d890f2bbb286" />
+<img width="2144" height="1247" alt="image" src="https://github.com/user-attachments/assets/0fcd516c-2714-4d38-b50a-9f314a0e23e5" />
+<img width="2144" height="1247" alt="image" src="https://github.com/user-attachments/assets/464c259f-38d6-496a-b798-5a59a5c5f0e2" />
+<img width="2144" height="1247" alt="image" src="https://github.com/user-attachments/assets/def78617-43e9-48d8-a286-90d378940ead" />
+<img width="2144" height="1247" alt="image" src="https://github.com/user-attachments/assets/fd02b91e-08fd-46a8-8720-0fd52ac2d492" />
+
 
 基于 Web 的 WebDAV 服务配置管理工具，提供可视化界面管理 `config.yaml`，支持用户管理、文件浏览、实时服务监控等功能。
 
@@ -66,7 +72,7 @@ apt install python3-flask python3-yaml
 ### 运行
 
 ```bash
-python server.py
+python3 server.py
 ```
 
 默认访问 `http://localhost:3080`
