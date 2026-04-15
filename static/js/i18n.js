@@ -16,7 +16,7 @@ var I18n = (function() {
       return Promise.resolve(_dict);
     }
 
-    var url = '/lang/' + _currentLang + '.json?' + Date.now();
+    var url = '/lang/' + _currentLang + '.json';
     console.log('[i18n] fetching', url);
 
     return fetch(url)

@@ -192,3 +192,5 @@ a{color:var(--accent2);text-decoration:none}
   .preview-meta{display:none}
 }
 @media(min-width:641px){.sb-back{display:none}}
+body {opacity: 0;transition: opacity 0.25s ease-in-out;}
+body.i18n-ready {opacity: 1;}

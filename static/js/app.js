@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
   currentLang = cachedLang;
   I18n.load(cachedLang).then(function() {
     I18n.applyToDOM();
+    document.body.classList.add('i18n-ready');
     updThm();
     setupNav();
     setupPermClick();
@@ -19,6 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(tick, 1000);
     updateServiceStatus();
     setInterval(updateServiceStatus, 10000);
+  }).catch(function() {
+    document.body.classList.add('i18n-ready');
   });
 });
 
