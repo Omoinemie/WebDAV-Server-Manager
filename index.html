@@ -5,12 +5,18 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>WebDAV Config Manager</title>
 	<link rel="stylesheet" href="/css/style.css">
-	<!-- Theme flash fix: apply before first paint -->
+	<!-- Theme & language flash fix: apply before first paint -->
 	<script>
 	(function(){
 		var t=localStorage.getItem('th');
 		if(!t){t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';}
 		document.documentElement.setAttribute('data-theme',t);
+		var lang=localStorage.getItem('lang')||'en';
+		document.documentElement.lang=lang;
+		// Preload language JSON to warm cache
+		var l=document.createElement('link');
+		l.rel='preload';l.as='fetch';l.href='/lang/'+lang+'.json';l.crossOrigin='anonymous';
+		document.head.appendChild(l);
 	})();
 	</script>
 </head>
@@ -203,7 +209,9 @@
 							<div class="fg full"><label data-i18n="label_config_path">WebDAV Config Path</label><input id="setConfigPath" placeholder="/app/webdav/config.yaml"></div>
 							<div class="fg"><label data-i18n="label_service_name">Service Name</label><input id="setServiceName" placeholder="webdav"></div>
 							<div class="fg"><label data-i18n="label_file_root">File Manager Root Directory</label><input id="setFileRoot" placeholder="/app/webdav/data"></div>
-							<div class="fg full"><label data-i18n="label_secret_key">Secret Key</label><input id="setSecretKey" placeholder="auto-generated if empty"></div>
+							<div class="fg full"><label data-i18n="label_secret_key">Secret Key</label>
+							<div class="pw-row"><input id="setSecretKey" data-i18n-placeholder="placeholder_secret_key" placeholder="click button to generate random key"><button class="btn btn-o btn-s" onclick="genSecretKey()" data-i18n-title="hint_secret_gen" title="Generate random"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></button></div>
+						</div>
 						</div>
 						<div style="margin-top:16px">
 							<button class="btn btn-p" onclick="saveSettings()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> <span data-i18n="btn_save">Save</span></button>

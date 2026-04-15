@@ -3,15 +3,9 @@ var cfg = {}, rules = [], users = [];
 var currentLang = 'en';
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Load settings to get preferred language, then init
-  fetch('/api/settings').then(function(r) { return r.json(); }).then(function(s) {
-    currentLang = s.language || localStorage.getItem('lang') || 'en';
-    return I18n.load(currentLang);
-  }).catch(function() {
-    // Fallback: use localStorage or default
-    currentLang = localStorage.getItem('lang') || 'en';
-    return I18n.load(currentLang);
-  }).then(function() {
+  var cachedLang = localStorage.getItem('lang') || 'en';
+  currentLang = cachedLang;
+  I18n.load(cachedLang).then(function() {
     I18n.applyToDOM();
     updThm();
     setupNav();
@@ -145,15 +139,8 @@ function fillForm() {
 
 async function saveCfg() {
   var c = buildCfg();
-  try {
-    var r = await fetch('/api/validate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(c)
-    });
-    var d = await r.json();
-    if (!d.valid) { toast(I18n.t('toast_validate_failed') + ': ' + d.errors.join('; '), 'err'); return; }
-  } catch (e) {}
+  var d = validateCfg(c);
+  if (!d.valid) { toast(I18n.t('toast_validate_failed') + ': ' + d.errors.join('; '), 'err'); return; }
 
   try {
     var r2 = await fetch('/api/config', {
@@ -225,7 +212,9 @@ async function loadSettingsForm() {
   try {
     var r = await fetch('/api/settings');
     var s = await r.json();
-    v('setLang', s.language || currentLang || 'en');
+    var lang = s.language || currentLang || 'en';
+    v('setLang', lang);
+    localStorage.setItem('lang', lang);
     v('setPort', s.web_port || 3080);
     v('setConfigPath', s.config_path || '');
     v('setServiceName', s.service_name || 'webdav');

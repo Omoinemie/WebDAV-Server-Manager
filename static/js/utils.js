@@ -63,18 +63,22 @@ function tick() {
 }
 
 function genPw(id) {
-  fetch('/api/generate-password?length=24').then(function(r) {
-    return r.json();
-  }).then(function(d) {
-    document.getElementById(id).value = d.password;
-    toast(I18n.t('toast_pw_generated'), 'ok');
-  }).catch(function() {
-    var c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var p = '';
-    for (var i = 0; i < 24; i++) p += c.charAt(Math.floor(Math.random() * c.length));
-    document.getElementById(id).value = p;
-    toast(I18n.t('toast_pw_generated'), 'inf');
-  });
+  var c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var a = new Uint32Array(24);
+  crypto.getRandomValues(a);
+  var p = '';
+  for (var i = 0; i < 24; i++) p += c.charAt(a[i] % c.length);
+  document.getElementById(id).value = p;
+  toast(I18n.t('toast_pw_generated'), 'ok');
+}
+
+function genSecretKey() {
+  var a = new Uint8Array(32);
+  crypto.getRandomValues(a);
+  var hex = '';
+  for (var i = 0; i < a.length; i++) hex += a[i].toString(16).padStart(2, '0');
+  document.getElementById('setSecretKey').value = hex;
+  toast(I18n.t('toast_pw_generated'), 'ok');
 }
 
 function togPw(id) {
@@ -100,4 +104,25 @@ function setPerm(id, p) {
     pcs[i].querySelector('input').checked = on;
     pcs[i].classList.toggle('on', on);
   }
+}
+
+function validateCfg(config) {
+  var errors = [];
+  if (config.port) {
+    var port = config.port;
+    if (!Number.isInteger(port) || port < 1 || port > 65535)
+      errors.push('Port must be a number between 1 and 65535');
+  }
+  if (config.tls && (!config.cert || !config.key))
+    errors.push('TLS enabled but cert/key not specified');
+  if (config.permissions && !/^[CRUDcrud]+$/.test(config.permissions))
+    errors.push('Permissions must only contain C, R, U, D characters');
+  var permRe = /^[CRUDcrud]+$/;
+  (config.users || []).forEach(function(u, i) {
+    if (!u.username) errors.push('User ' + (i + 1) + ': username is required');
+    if (!u.password) errors.push('User ' + (i + 1) + ': password is required');
+    if (u.permissions && !permRe.test(u.permissions))
+      errors.push('User ' + (i + 1) + ' (' + (u.username || '?') + '): invalid permissions');
+  });
+  return { valid: errors.length === 0, errors: errors };
 }

@@ -6,7 +6,6 @@ import json
 import shutil
 import re
 import secrets
-import string
 import time
 import hashlib
 import hmac
@@ -53,19 +52,6 @@ SERVICE_NAME = settings.get("service_name", "webdav")
 FILE_ROOT = os.environ.get("FILE_ROOT", settings.get("file_root", "/app/webdav/data"))
 LANG = settings.get("language", "en")
 
-# ─── i18n ───
-def load_lang(lang_code):
-    lang_file = os.path.join(os.path.dirname(__file__), "lang", f"{lang_code}.json")
-    fallback = os.path.join(os.path.dirname(__file__), "lang", "en.json")
-    for path in [lang_file, fallback]:
-        if os.path.exists(path):
-            try:
-                with open(path, "r", encoding="utf-8") as f:
-                    return json.load(f)
-            except Exception:
-                pass
-    return {}
-
 # ─── YAML Tools ───
 def load_config():
     if not os.path.exists(CONFIG_PATH):
@@ -109,26 +95,6 @@ def make_sign(path, expire=None):
 @app.route("/")
 def index():
     return send_from_directory(".", "index.html")
-
-
-# ─── Routes: i18n ───
-@app.route("/api/lang/<code>")
-def api_get_lang(code):
-    """Return language JSON"""
-    lang_data = load_lang(code)
-    return jsonify(lang_data)
-
-
-@app.route("/api/lang")
-def api_list_langs():
-    """List available language files"""
-    lang_dir = os.path.join(os.path.dirname(__file__), "lang")
-    langs = []
-    if os.path.isdir(lang_dir):
-        for f in os.listdir(lang_dir):
-            if f.endswith(".json"):
-                langs.append(f[:-5])
-    return jsonify({"languages": langs, "current": LANG})
 
 
 # ─── Routes: Settings ───
@@ -215,33 +181,6 @@ def api_save_config():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/validate", methods=["POST"])
-def api_validate():
-    try:
-        config = request.get_json()
-        errors = []
-        if config.get("port"):
-            port = config["port"]
-            if not isinstance(port, int) or port < 1 or port > 65535:
-                errors.append("Port must be a number between 1 and 65535")
-        if config.get("tls") and (not config.get("cert") or not config.get("key")):
-            errors.append("TLS enabled but cert/key not specified")
-        if config.get("permissions"):
-            if not re.match(r"^[CRUDcrud]+$", config["permissions"]):
-                errors.append("Permissions must only contain C, R, U, D characters")
-        perm_re = re.compile(r"^[CRUDcrud]+$")
-        for i, u in enumerate(config.get("users", [])):
-            if not u.get("username"):
-                errors.append(f"User {i + 1}: username is required")
-            if not u.get("password"):
-                errors.append(f"User {i + 1}: password is required")
-            if u.get("permissions") and not perm_re.match(u["permissions"]):
-                errors.append(f"User {i + 1} ({u.get('username', '?')}): invalid permissions")
-        return jsonify({"valid": len(errors) == 0, "errors": errors})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
 @app.route("/api/raw")
 def api_get_raw():
     try:
@@ -266,15 +205,6 @@ def api_save_raw():
         return jsonify({"error": f"Invalid YAML: {e}"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-# ─── Routes: Password ───
-@app.route("/api/generate-password")
-def api_generate_password():
-    length = int(request.args.get("length", 24))
-    chars = string.ascii_letters + string.digits
-    password = ''.join(secrets.choice(chars) for _ in range(length))
-    return jsonify({"password": password})
 
 
 # ─── Routes: Files ───

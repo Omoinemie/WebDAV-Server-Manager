@@ -107,6 +107,8 @@
   "label_password": "密码",
   "placeholder_password": "明文或 {bcrypt}$...",
   "hint_pw_gen": "生成 24 位随机密码（大小写+数字）",
+  "hint_secret_gen": "生成 64 位随机十六进制密钥",
+  "placeholder_secret_key": "点击右侧按钮随机生成",
   "label_user_dir": "专属目录（留空用默认）",
   "placeholder_user_dir": "/data/user",
   "label_user_perms": "权限（留空用默认）",

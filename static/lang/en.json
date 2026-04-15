@@ -107,6 +107,8 @@
   "label_password": "Password",
   "placeholder_password": "plaintext or {bcrypt}$...",
   "hint_pw_gen": "Generate 24-char random password (letters + digits)",
+  "hint_secret_gen": "Generate 64-char random hex key",
+  "placeholder_secret_key": "click button to generate random key",
   "label_user_dir": "User Directory (leave empty for default)",
   "placeholder_user_dir": "/data/user",
   "label_user_perms": "Permissions (leave empty for default)",
