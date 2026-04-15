@@ -198,11 +198,11 @@ function buildCfg() {
 function setupLangSwitch() {
   var sel = document.getElementById('setLang');
   if (!sel) return;
-  sel.addEventListener('change', function() {
+  sel.addEventListener('change', async function() {
     var newLang = this.value;
     if (newLang === currentLang) return;
     currentLang = newLang;
-    I18n.switchLang(newLang);
+    await I18n.switchLang(newLang);
     // Re-render dynamic content that uses I18n.t()
     renderUsers();
     renderRules();
@@ -248,7 +248,7 @@ async function saveSettings() {
       // Switch language client-side if changed
       if (newLang !== currentLang) {
         currentLang = newLang;
-        I18n.switchLang(newLang);
+        await I18n.switchLang(newLang);
         renderUsers();
         renderRules();
       }
